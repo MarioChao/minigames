@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Railgun Reflectors</title>
+		<script type="module" src="./src/main.js"></script>
+	</head>
+	<body>
+		<h3>Inspired by SekaiCTF 2024's railgun challenge</h3>
+		<div>
+			<canvas id="railgun-canvas" width="600px" height="600px" style="border: 1px solid;">
+			</canvas>
+		</div>
+		<div>
+			<label for="input-railgun-count">Railguns</label>
+			<input id="input-railgun-count" type="range" min="1" max="50" value="5">
+			<span id="railgun-count-display"></span>
+			<br>
+			<button id="fill-top-row" type="button">Fill top row</button>
+			<br>
+			<button id="fill-bottom-row" type="button">Fill bottom row</button>
+		</div>
+	</body>
+</html>

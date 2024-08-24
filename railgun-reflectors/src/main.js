@@ -2,13 +2,24 @@ import { CanvasGrid } from "./canvas-grid.js";
 
 let grid = new CanvasGrid();
 
-const rainbowColors = ['red', 'orange', 'gold', 'lime', 'green', 'cyan', 'blue',
-	'indigo', 'violet', 'hotpink', 'deeppink', 'black', 'grey'];
+const rainbowColors = ["red", "orange", "gold", "lime", "green", "cyan", "blue",
+	"indigo", "violet", "deeppink", "black", "grey"];
+const rainbowLineDashes = [
+	[],
+	[5, 5],
+	[15, 10, 5, 10],
+	[15, 5],
+	[15, 5, 5],
+	[15, 5, 5, 5, 5, 5, 5, 5],
+	[5, 15, 15],
+	[15, 5, 5, 15],
+	[10, 5, 10, 5, 10, 15],
+];
 
 const reflectors = [];
 let railgunCount;
 
-function initializeReflectors() {
+function updateReflectorsSize() {
 	for (let i = 0; i < railgunCount + 2; i++) {
 		if (reflectors[i]) {
 			continue;
@@ -32,15 +43,64 @@ function updateReflectorAt(x, y) {
 	reflectors[reflectorY][reflectorX] *= -1;
 }
 
+function parseReflectors() {
+	let parseResult = "";
+	for (let i = 1; i <= railgunCount + 1; i++) {
+		for (let j = 1; j <= railgunCount; j++) {
+			if (reflectors[i][j] === 1) {
+				parseResult += "1";
+			} else {
+				parseResult += "0";
+			}
+		}
+		if (i < railgunCount + 1) {
+			parseResult += "\n";
+		}
+	}
+	return parseResult;
+}
+
+function setReflectors(rawString) {
+	// Update railgun count
+	let reflectorStrings = rawString.toString().trim().split('\n');
+	let count = reflectorStrings[0].length;
+	let rows = reflectorStrings.length;
+	updateRailgunCount(count);
+
+	// Set reflectors
+	let deltaI = 1 + Math.max(count - rows, 0);
+	let deltaJ = 1;
+	for (let i = 0; i < reflectorStrings.length; i++) {
+		for (let j = 0; j < reflectorStrings[i].length; j++) {
+			if (reflectorStrings[i][j] === "0") {
+				reflectors[i + deltaI][j + deltaJ] = -1;
+			} else {
+				reflectors[i + deltaI][j + deltaJ] = 1;
+			}
+		}
+	}
+	updateCanvas();
+}
+
+function updateReflectorsDisplay() {
+	const reflectorsDisplay = document.getElementById("reflectors-display");
+	reflectorsDisplay.innerHTML = parseReflectors();
+}
+
 function clearGrid() {
-	grid.setStrokeStyle("black").setLineWidth(0.5).drawGrid();
+	grid.setStrokeStyle("black")
+		.setLineWidth(0.25)
+		.setLineDash()
+		.drawGrid();
 }
 
 function drawReflectors() {
-	grid.setStrokeStyle("darkcyan").setLineWidth(3);
+	grid.setStrokeStyle("darkcyan")
+		.setLineWidth(5)
+		.setLineDash();
 	for (let i = 1; i <= railgunCount + 1; i++) {
 		for (let j = 1; j <= railgunCount; j++) {
-			if (reflectors[i][j] == 1) {
+			if (reflectors[i][j] === 1) {
 				grid.drawLine(j - 1, i - 1, j, i - 1);
 			}
 		}
@@ -48,46 +108,68 @@ function drawReflectors() {
 }
 
 function _drawRailgun(startRow) {
+	// Draw variables
+	let previousJ = 0;
+	let previousI = startRow;
+
+	// Railgun variables
 	let railRow = startRow;
 	let railDirection = -1;
+
+	// Fire railgun
 	for (let j = 1; j <= railgunCount; j++) {
-		// Draw first half
+		// Get railgun's position at halfway
 		let halfRailRow = railRow + railDirection / 2;
-		grid.drawLine(j - 1, railRow - 0.5, j - 0.5, halfRailRow - 0.5);
-
+		
 		// Get info
-		let reflectorRow = railRow + (railDirection == 1);
-
-		// Reflect
+		let reflectorRow = railRow + (railDirection === 1);
+		
+		// Check reflector
 		let isRowValid = (1 <= reflectorRow) && (reflectorRow <= railgunCount + 1);
-		if (isRowValid && reflectors[reflectorRow][j] == 1) {
+		let willDrawLine = false;
+		if (isRowValid && reflectors[reflectorRow][j] === 1) {
+			// Reflect
 			railDirection *= -1;
+			
+			willDrawLine = true;
 		} else {
 			railRow += railDirection;
 		}
 
-		// Draw second half
-		grid.drawLine(j - 0.5, halfRailRow - 0.5, j, railRow - 0.5);
+		// Draw line if reflected or last column
+		if (willDrawLine) {
+			grid.drawLine(previousJ, previousI - 0.5, j - 0.5, halfRailRow - 0.5);
+			previousJ = j - 0.5;
+			previousI = halfRailRow;
+		}
+		if (j == railgunCount) {
+			grid.drawLine(previousJ, previousI - 0.5, j, railRow - 0.5);
+		}
 	}
 }
 
 function drawRailguns() {
 	for (let i = 1; i <= railgunCount; i++) {
-		grid.setStrokeStyle(rainbowColors[(i - 1) % rainbowColors.length]).setLineWidth(1);
+		grid.setStrokeStyle(rainbowColors[(i - 1) % rainbowColors.length])
+			.setLineWidth(1)
+			.setLineDash(rainbowLineDashes[Math.floor((i - 1) / rainbowColors.length) % rainbowLineDashes.length]);
 		_drawRailgun(i);
 	}
 }
 
 function updateCanvas() {
 	clearGrid();
-	drawReflectors();
 	drawRailguns();
+	drawReflectors();
+	updateReflectorsDisplay();
 }
 
 function updateRailgunCount(count) {
+	const railgunCountDisplay = document.getElementById("railgun-count-display");
+	railgunCountDisplay.innerText = count;
 	railgunCount = parseInt(count);
 	grid.setGridDimension(count);
-	initializeReflectors();
+	updateReflectorsSize();
 	updateCanvas();
 }
 
@@ -117,13 +199,9 @@ function initializeCanvas() {
 
 function initializeRailgunCountInput() {
 	const inputRailgunCount = document.getElementById("input-railgun-count");
-	const railgunCountDisplay = document.getElementById("railgun-count-display");
-	
-	railgunCountDisplay.innerText = inputRailgunCount.value;
 	updateRailgunCount(inputRailgunCount.value);
 	
 	inputRailgunCount.addEventListener("input", function(ev) {
-		railgunCountDisplay.innerText = this.value;
 		updateRailgunCount(this.value);
 	});
 }
@@ -146,9 +224,18 @@ function initializeButtonInput() {
 	});
 }
 
+function initializeReflectorsInput() {
+	const inputReflectors = document.getElementById("input-reflectors");
+
+	inputReflectors.addEventListener("change", function(ev) {
+		setReflectors(this.value)
+	});
+}
+
 function initializeInput() {
 	initializeRailgunCountInput();
 	initializeButtonInput();
+	initializeReflectorsInput();
 }
 
 function onDOMContentLoaded() {

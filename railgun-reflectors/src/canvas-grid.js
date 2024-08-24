@@ -7,6 +7,9 @@ export class CanvasGrid {
 		this.ctx = ctx;
 		this.totalWidth = ctx.canvas.width;
 		this.totalHeight = ctx.canvas.height;
+		this.setStrokeStyle();
+		this.setLineWidth();
+		this.setLineDash();
 		return this;
 	}
 
@@ -17,19 +20,25 @@ export class CanvasGrid {
 		return this;
 	}
 
-	setStrokeStyle(strokeStyle) {
+	setStrokeStyle(strokeStyle = "black") {
 		this.strokeStyle = strokeStyle
 		return this;
 	}
 
-	setLineWidth(lineWidth) {
+	setLineWidth(lineWidth = 1) {
 		this.lineWidth = lineWidth;
+		return this;
+	}
+
+	setLineDash(lineDash = []) {
+		this.lineDash = lineDash;
 		return this;
 	}
 
 	_detailedStroke() {
 		this.ctx.strokeStyle = this.strokeStyle;
 		this.ctx.lineWidth = this.lineWidth;
+		this.ctx.setLineDash(this.lineDash);
 		this.ctx.stroke();
 	}
 

@@ -3,22 +3,37 @@
 <html>
 	<head>
 		<title>Railgun Reflectors</title>
+		<link rel="stylesheet" href="./src/style.css" type="text/css">
 		<script type="module" src="./src/main.js"></script>
 	</head>
-	<body>
+	<body style="background-color: rgb(225, 255, 255);">
 		<h3>Inspired by SekaiCTF 2024's railgun challenge</h3>
-		<div>
-			<canvas id="railgun-canvas" width="600px" height="600px" style="border: 1px solid;">
-			</canvas>
+		<div class="flex-container">
+			<div style="width: 250px;">
+				<label for="input-railgun-count">Railguns</label>
+				<input id="input-railgun-count" type="range" min="1" max="100" value="5">
+				<span id="railgun-count-display"></span>
+				<br>
+				<button id="fill-top-row" type="button">Fill top row</button>
+				<br>
+				<button id="fill-bottom-row" type="button">Fill bottom row</button>
+			</div>
+			<div>
+				<label for="input-reflectors">Input reflectors:</label>
+				<br>
+				<textarea id="input-reflectors" type="text" rows="4" cols="30"></textarea>
+			</div>
+			<div>
+				<label for="reflectors-display">Reflectors result:</label>
+				<br>
+				<textarea id="reflectors-display" readonly type="text" rows="4" cols="30"></textarea>
+			</div>
 		</div>
-		<div>
-			<label for="input-railgun-count">Railguns</label>
-			<input id="input-railgun-count" type="range" min="1" max="50" value="5">
-			<span id="railgun-count-display"></span>
-			<br>
-			<button id="fill-top-row" type="button">Fill top row</button>
-			<br>
-			<button id="fill-bottom-row" type="button">Fill bottom row</button>
+		<div class="flex-container">
+			<div>
+				<canvas id="railgun-canvas" width="700px" height="700px" style="border: 1px solid;">
+				</canvas>
+			</div>
 		</div>
 	</body>
 </html>

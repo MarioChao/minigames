@@ -1,0 +1,23 @@
+/* Modified from https://mariochao.github.io/encryptions/src/style.css */
+
+.flex-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.flex-container > div {
+    margin: 10px;
+    padding: 10px;
+    border: 3px solid black;
+}
+
+/* HTML elements */
+button {
+    cursor: pointer;
+}
+textarea {
+    resize: none;
+    font-family: 'Fira Mono', Menlo, 'Courier New', Courier, Consolas, Monaco, 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
+    font-size: 12px;
+}

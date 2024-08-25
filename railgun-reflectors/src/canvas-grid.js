@@ -7,6 +7,8 @@ export class CanvasGrid {
 		this.ctx = ctx;
 		this.totalWidth = ctx.canvas.width;
 		this.totalHeight = ctx.canvas.height;
+		this.setScale();
+		this.setTranslate();
 		this.setStrokeStyle();
 		this.setLineWidth();
 		this.setLineDash();
@@ -17,6 +19,16 @@ export class CanvasGrid {
 		this.size = size;
 		this.squareWidth = this.totalWidth / size;
 		this.squareHeight = this.totalHeight / size;
+		return this;
+	}
+
+	setScale(xy = {x: 1, y: 1}) {
+		this.scale = xy;
+		return this;
+	}
+
+	setTranslate(xy = {x: 0, y: 0}) {
+		this.translate = xy;
 		return this;
 	}
 
@@ -35,25 +47,50 @@ export class CanvasGrid {
 		return this;
 	}
 
-	_detailedStroke() {
+	_transformations() {
+		this.ctx.resetTransform();
+		this.ctx.translate(this.translate.x, this.translate.y);
+		this.ctx.scale(this.scale.x, this.scale.y);
+		return this;
+	}
+
+	_detailedStrokeStyle() {
 		this.ctx.strokeStyle = this.strokeStyle;
 		this.ctx.lineWidth = this.lineWidth;
 		this.ctx.setLineDash(this.lineDash);
+		return this;
+	}
+
+	_detailedStroke() {
+		this._detailedStrokeStyle();
 		this.ctx.stroke();
+		return this;
 	}
 
 	drawGrid() {
-		this.ctx.beginPath()
-		if (this.squareWidth < 1 && this.squareHeight < 1) {
+		this._transformations();
+		this.ctx.beginPath();
+
+		let startX = Math.floor((-this.translate.x) / this.scale.x / this.squareWidth);
+		let endX = Math.ceil((-this.translate.x + this.totalWidth) / this.scale.x / this.squareWidth);
+		let startY = Math.floor((-this.translate.y) / this.scale.y / this.squareHeight);
+		let endY = Math.ceil((-this.translate.y + this.totalHeight) / this.scale.y / this.squareHeight);
+		const totalCount = (endX - startX) * (endY - startY);
+
+		if (totalCount > 100000) {
 			this.ctx.rect(0, 0, this.totalWidth, this.totalHeight);
 			this.ctx.fillStyle = "lightgrey";
 		} else {
-			for (let x = 0; x < this.size; x++) {
-				for (let y = 0; y < this.size; y++) {
-					this.ctx.rect(x * this.squareWidth, y * this.squareHeight, this.squareWidth, this.squareHeight);
+			this.ctx.fillStyle = "white";
+			this.ctx.fillRect(0, 0, this.totalWidth, this.totalHeight);
+			this._detailedStrokeStyle();
+
+			for (let x = startX; x < endX; x++) {
+				for (let y = startY; y < endY; y++) {
+					this.ctx.strokeRect(x * this.squareWidth, y * this.squareHeight, this.squareWidth, this.squareHeight);
+					// this.ctx.rect(x * this.squareWidth, y * this.squareHeight, this.squareWidth, this.squareHeight);
 				}
 			}
-			this.ctx.fillStyle = "white";
 		}
 		this.ctx.fill();
 		this._detailedStroke();
@@ -61,6 +98,7 @@ export class CanvasGrid {
 	}
 
 	drawLine(cellX1, cellY1, cellX2, cellY2) {
+		this._transformations();
 		this.ctx.beginPath();
 		this.ctx.moveTo(cellX1 * this.squareWidth, cellY1 * this.squareHeight);
 		this.ctx.lineTo(cellX2 * this.squareWidth, cellY2 * this.squareHeight);

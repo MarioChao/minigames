@@ -44,12 +44,17 @@ export class CanvasGrid {
 
 	drawGrid() {
 		this.ctx.beginPath()
-		for (let x = 0; x < this.size; x++) {
-			for (let y = 0; y < this.size; y++) {
-				this.ctx.rect(x * this.squareWidth, y * this.squareHeight, this.squareWidth, this.squareHeight);
+		if (this.squareWidth < 1 && this.squareHeight < 1) {
+			this.ctx.rect(0, 0, this.totalWidth, this.totalHeight);
+			this.ctx.fillStyle = "lightgrey";
+		} else {
+			for (let x = 0; x < this.size; x++) {
+				for (let y = 0; y < this.size; y++) {
+					this.ctx.rect(x * this.squareWidth, y * this.squareHeight, this.squareWidth, this.squareHeight);
+				}
 			}
+			this.ctx.fillStyle = "white";
 		}
-		this.ctx.fillStyle = "white";
 		this.ctx.fill();
 		this._detailedStroke();
 		return this;

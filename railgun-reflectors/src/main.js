@@ -1,4 +1,5 @@
 import { CanvasGrid } from "./canvas-grid.js";
+import { debounce } from "./utils.js";
 
 let grid = new CanvasGrid();
 
@@ -165,6 +166,8 @@ function updateCanvas() {
 }
 
 function updateRailgunCount(count) {
+	const inputRailgunCount = document.getElementById("input-railgun-count");
+	inputRailgunCount.value = count;
 	const railgunCountDisplay = document.getElementById("railgun-count-display");
 	railgunCountDisplay.innerText = count;
 	railgunCount = parseInt(count);
@@ -172,6 +175,8 @@ function updateRailgunCount(count) {
 	updateReflectorsSize();
 	updateCanvas();
 }
+
+const debouncedUpdateRailgunCount = debounce(updateRailgunCount, 250);
 
 /**
  * 
@@ -202,7 +207,15 @@ function initializeRailgunCountInput() {
 	updateRailgunCount(inputRailgunCount.value);
 	
 	inputRailgunCount.addEventListener("input", function(ev) {
-		updateRailgunCount(this.value);
+		let count = this.value;
+		if (count <= 532) {
+			updateRailgunCount(count);
+			debouncedUpdateRailgunCount(this.value);
+		} else {
+			const railgunCountDisplay = document.getElementById("railgun-count-display");
+			railgunCountDisplay.innerText = count;
+			debouncedUpdateRailgunCount(this.value);
+		}
 	});
 }
 

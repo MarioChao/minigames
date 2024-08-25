@@ -9,20 +9,23 @@
 	<body style="background-color: rgb(225, 255, 255);">
 		<h3>Inspired by SekaiCTF 2024's railgun challenge</h3>
 		<div class="flex-container">
-			<div style="width: 250px;">
+			<!-- Basic input -->
+			<div style="width: 275px;">
 				<label for="input-railgun-count">Railguns</label>
-				<input id="input-railgun-count" type="range" min="1" max="100" value="5">
+				<input id="input-railgun-count" type="range" min="1" max="500" value="5" style="width: 240px;">
 				<span id="railgun-count-display"></span>
 				<br>
 				<button id="fill-top-row" type="button">Fill top row</button>
 				<br>
 				<button id="fill-bottom-row" type="button">Fill bottom row</button>
 			</div>
+			<!-- Data import -->
 			<div>
 				<label for="input-reflectors">Input reflectors:</label>
 				<br>
 				<textarea id="input-reflectors" type="text" rows="4" cols="30"></textarea>
 			</div>
+			<!-- Data result -->
 			<div>
 				<label for="reflectors-display">Reflectors result:</label>
 				<br>

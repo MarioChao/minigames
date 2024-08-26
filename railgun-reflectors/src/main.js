@@ -92,7 +92,7 @@ function updateReflectorAt(x, y) {
 function parseReflectors() {
 	let parseResult = "";
 	for (let i = 1; i <= railgunCount + 1; i++) {
-		parseResult += storedReflectorsStrings[i].join("");
+		parseResult += storedReflectorsStrings[i].join("").substring(0, railgunCount);
 		if (i < railgunCount + 1) {
 			parseResult += "\n";
 		}

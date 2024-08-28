@@ -12,6 +12,19 @@
     border: 3px solid black;
 }
 
+.transparent {
+    background-color: transparent;
+    border: none;
+}
+
+.refresh-button {
+    /* Image from Wikimedia Commons */
+    background: url('../assets/refresh-icon.png') no-repeat top center;
+    background-size: contain;
+    width: 15px;
+    height: 15px;
+}
+
 /* HTML elements */
 button {
     cursor: pointer;

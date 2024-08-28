@@ -30,7 +30,7 @@ const rainbowLineDashes = [
 const reflectors = [];
 let railgunCount;
 
-const gridWidth = 0.1;
+const gridMinimumWidth = 0.1;
 
 const storedReflectorsStrings = [];
 
@@ -123,23 +123,36 @@ function setReflectors(rawString) {
 	updateReflectorsDisplay();
 }
 
-function updateReflectorsDisplay() {
+function actuallyUpdateReflectorsDisplay() {
+	// Update
 	const reflectorsDisplay = document.getElementById("reflectors-display");
 	reflectorsDisplay.innerHTML = parseReflectors();
+
+	// Hide refresh button
+	const refreshReflectorsDisplay = document.getElementById("refresh-reflectors-display");
+	refreshReflectorsDisplay.setAttribute("hidden", true);
 }
 
-const debouncedUpdateReflectorsDisplay = debounce(updateReflectorsDisplay, 100);
+/**
+ * Shows a visual indicator that the reflectors display can be updated.
+ */
+function updateReflectorsDisplay() {
+	const refreshReflectorsDisplay = document.getElementById("refresh-reflectors-display");
+	refreshReflectorsDisplay.removeAttribute("hidden");
+}
+
+const debouncedUpdateReflectorsDisplay = debounce(updateReflectorsDisplay, 0);
 
 function clearGrid() {
-	grid.setStrokeStyle("black")
-		.setLineWidth(gridWidth)
+	grid.setStrokeStyle("darkgray")
+		.setLineWidth(gridMinimumWidth + (0.9 - gridMinimumWidth) / canvas.ctxScale.y)
 		.setLineDash()
 		.drawGrid();
 }
 
 function drawReflectors() {
 	grid.setStrokeStyle("darkcyan")
-		.setLineWidth(gridWidth + (5 - gridWidth) / canvas.ctxScale.y)
+		.setLineWidth(gridMinimumWidth + (5 - gridMinimumWidth) / canvas.ctxScale.y)
 		.setLineDash();
 	for (let i = 1; i <= railgunCount + 1; i++) {
 		for (let j = 1; j <= railgunCount; j++) {
@@ -194,7 +207,7 @@ function _drawRailgun(startRow) {
 function drawRailguns() {
 	for (let i = 1; i <= railgunCount; i++) {
 		grid.setStrokeStyle(rainbowColors[(i - 1) % rainbowColors.length])
-			.setLineWidth(gridWidth + (1 - gridWidth) / canvas.ctxScale.y)
+			.setLineWidth(gridMinimumWidth + (1 - gridMinimumWidth) / canvas.ctxScale.y)
 			.setLineDash(rainbowLineDashes[Math.floor((i - 1) / rainbowColors.length) % rainbowLineDashes.length].map(x => x / Math.sqrt(canvas.ctxScale.y)));
 		_drawRailgun(i);
 	}
@@ -285,7 +298,15 @@ function initializeReflectorsInput() {
 	const inputReflectors = document.getElementById("input-reflectors");
 
 	inputReflectors.addEventListener("change", function(ev) {
-		setReflectors(this.value)
+		setReflectors(this.value);
+	});
+}
+
+function initializeReflectorsDisplay() {
+	const refreshReflectorsDisplay = document.getElementById('refresh-reflectors-display');
+
+	refreshReflectorsDisplay.addEventListener("click", function(ev) {
+		actuallyUpdateReflectorsDisplay();
 	});
 }
 
@@ -293,6 +314,7 @@ function initializeInput() {
 	initializeRailgunCountInput();
 	initializeButtonInput();
 	initializeReflectorsInput();
+	initializeReflectorsDisplay();
 }
 
 function onDOMContentLoaded() {

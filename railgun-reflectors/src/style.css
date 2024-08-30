@@ -19,7 +19,7 @@
 
 .refresh-button {
     /* Image from Wikimedia Commons */
-    background: url('../assets/refresh-icon.png') no-repeat top center;
+    background: url('./assets/refresh-icon.png') no-repeat top center;
     background-size: contain;
     width: 15px;
     height: 15px;

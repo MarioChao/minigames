@@ -246,15 +246,26 @@ function onCanvasClicked(event) {
 	updateReflectorsDisplay();
 }
 
+function resizeCanvas() {
+	canvas.canvas.width = window.innerHeight * 0.75;
+	canvas.canvas.height = canvas.canvas.width;
+	grid.updateGridDimension();
+	updateCanvas();
+}
+
 function initializeCanvas() {
 	const railgunCanvas = document.getElementById("railgun-canvas");
 	ctx = railgunCanvas.getContext("2d");
-	
+
 	canvas.setCanvas(railgunCanvas);
 
 	grid.setContext(ctx)
 		.setScale(canvas.ctxScale)
 		.setTranslate(canvas.ctxTranslate);
+
+	window.addEventListener("resize", resizeCanvas);
+	window.addEventListener("orientationchange", resizeCanvas);
+	resizeCanvas();
 }
 
 function initializeRailgunCountInput() {

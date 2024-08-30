@@ -5,8 +5,6 @@ export class CanvasGrid {
 	 */
 	setContext(ctx) {
 		this.ctx = ctx;
-		this.totalWidth = ctx.canvas.width;
-		this.totalHeight = ctx.canvas.height;
 		this.setScale();
 		this.setTranslate();
 		this.setStrokeStyle();
@@ -17,9 +15,22 @@ export class CanvasGrid {
 
 	setGridDimension(size) {
 		this.size = size;
-		this.squareWidth = this.totalWidth / size;
-		this.squareHeight = this.totalHeight / size;
+		this.squareWidth = this.getCanvasWidth() / size;
+		this.squareHeight = this.getCanvasHeight() / size;
 		return this;
+	}
+
+	updateGridDimension() {
+		this.setGridDimension(this.size);
+		return this;
+	}
+
+	getCanvasWidth() {
+		return this.ctx.canvas.width;
+	}
+
+	getCanvasHeight() {
+		return this.ctx.canvas.height;
 	}
 
 	setScale(xy = {x: 1, y: 1}) {
@@ -72,19 +83,19 @@ export class CanvasGrid {
 		this.ctx.beginPath();
 
 		let startX = Math.floor((-this.translate.x) / this.scale.x / this.squareWidth);
-		let endX = Math.ceil((-this.translate.x + this.totalWidth) / this.scale.x / this.squareWidth);
+		let endX = Math.ceil((-this.translate.x + this.getCanvasWidth()) / this.scale.x / this.squareWidth);
 		let startY = Math.floor((-this.translate.y) / this.scale.y / this.squareHeight);
-		let endY = Math.ceil((-this.translate.y + this.totalHeight) / this.scale.y / this.squareHeight);
+		let endY = Math.ceil((-this.translate.y + this.getCanvasHeight()) / this.scale.y / this.squareHeight);
 		const totalSquaresCount = (endX - startX) * (endY - startY);
 		const totalLinesCount = (endX - startX) + (endY - startY);
 
 		if (totalLinesCount > 1000) {
-			this.ctx.rect(0, 0, this.totalWidth, this.totalHeight);
+			this.ctx.rect(0, 0, this.getCanvasWidth(), this.getCanvasHeight());
 			this.ctx.fillStyle = "lightgrey";
 			this.ctx.fill();
 		} else {
 			this.ctx.fillStyle = "white";
-			this.ctx.fillRect(0, 0, this.totalWidth, this.totalHeight);
+			this.ctx.fillRect(0, 0, this.getCanvasWidth(), this.getCanvasHeight());
 			
 			// this._detailedStrokeStyle();
 			// for (let x = startX; x < endX; x++) {

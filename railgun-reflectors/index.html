@@ -2,6 +2,7 @@
 
 <html>
 	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Railgun Reflectors</title>
 		<link rel="stylesheet" href="./src/style.css" type="text/css">
 		<script type="module" src="./src/main.js"></script>
@@ -10,9 +11,9 @@
 		<h3>Inspired by SekaiCTF 2024's railgun challenge</h3>
 		<div class="flex-container">
 			<!-- Basic input -->
-			<div style="width: 275px;">
+			<div style="width: 18%;">
 				<label for="input-railgun-count">Railguns</label>
-				<input id="input-railgun-count" type="range" min="1" max="2000" value="5" style="width: 230px;">
+				<input id="input-railgun-count" type="range" min="1" max="2000" value="5" style="width: 80%;">
 				<span id="railgun-count-display"></span>
 				<br>
 				<button id="fill-top-row" type="button">Fill top row</button>
@@ -35,7 +36,7 @@
 		</div>
 		<div class="flex-container">
 			<div>
-				<canvas id="railgun-canvas" width="700px" height="700px" style="border: 1px solid;">
+				<canvas id="railgun-canvas" width="700" height="700" style="border: 1px solid;">
 				</canvas>
 			</div>
 		</div>

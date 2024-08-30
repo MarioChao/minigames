@@ -247,7 +247,7 @@ function onCanvasClicked(event) {
 }
 
 function resizeCanvas() {
-	canvas.canvas.width = window.innerHeight * 0.75;
+	canvas.canvas.width = Math.min(window.innerWidth * 0.9, window.innerHeight * 0.75);
 	canvas.canvas.height = canvas.canvas.width;
 	grid.updateGridDimension();
 	updateCanvas();

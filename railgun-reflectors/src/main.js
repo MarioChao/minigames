@@ -2,6 +2,8 @@ import { CanvasGrid } from "./canvas-grid.js";
 import { CanvasUtil } from "./canvas-util.js";
 import { debounce } from "./utils.js";
 
+// Variables
+
 let ctx;
 const grid = new CanvasGrid();
 const canvas = new CanvasUtil();
@@ -28,11 +30,15 @@ const rainbowLineDashes = [
 ];
 
 const reflectors = [];
+
 let railgunCount;
+let isTwoWayRailgun = false;
 
 const gridMinimumWidth = 0.1;
 
 const storedReflectorsStrings = [];
+
+// Local functions
 
 function adjustReflectorsStrings(i, j) {
 	for (let x = storedReflectorsStrings.length; x <= i; x++) {
@@ -163,14 +169,14 @@ function drawReflectors() {
 	}
 }
 
-function _drawRailgun(startRow) {
+function _drawRailgun(startRow, startDirection = -1) {
 	// Draw variables
 	let previousJ = 0;
 	let previousI = startRow;
 
 	// Railgun variables
 	let railRow = startRow;
-	let railDirection = -1;
+	let railDirection = startDirection;
 
 	// Fire railgun
 	for (let j = 1; j <= railgunCount; j++) {
@@ -205,11 +211,22 @@ function _drawRailgun(startRow) {
 }
 
 function drawRailguns() {
+	// const scaledLineDashes = rainbowLineDashes.map(dash => dash.map(x => x / Math.sqrt(canvas.ctxScale.y)));
+	const scaledLineDashes = rainbowLineDashes.map(dash => dash.map(x => x / Math.log(Math.E + railgunCount)));
+	// const scaledLineDashes = [[]];
 	for (let i = 1; i <= railgunCount; i++) {
 		grid.setStrokeStyle(rainbowColors[(i - 1) % rainbowColors.length])
 			.setLineWidth(gridMinimumWidth + (1 - gridMinimumWidth) / canvas.ctxScale.y)
-			.setLineDash(rainbowLineDashes[Math.floor((i - 1) / rainbowColors.length) % rainbowLineDashes.length].map(x => x / Math.sqrt(canvas.ctxScale.y)));
+			.setLineDash(scaledLineDashes[Math.floor((i - 1) / rainbowColors.length) % scaledLineDashes.length]);
 		_drawRailgun(i);
+	}
+	if (isTwoWayRailgun) {
+		for (let i = 1; i <= railgunCount; i++) {
+			grid.setStrokeStyle(rainbowColors[(i - 1) % rainbowColors.length])
+				.setLineWidth(gridMinimumWidth + (1 - gridMinimumWidth) / canvas.ctxScale.y)
+				.setLineDash(scaledLineDashes[Math.floor((i - 1) / rainbowColors.length) % scaledLineDashes.length]);
+			_drawRailgun(i, 1);
+		}
 	}
 }
 
@@ -285,6 +302,16 @@ function initializeRailgunCountInput() {
 	});
 }
 
+function initializeTwoWayRailgunInput() {
+	const inputTwoWayRailgun = document.getElementById("input-two-way-railgun");
+	isTwoWayRailgun = inputTwoWayRailgun.checked;
+	
+	inputTwoWayRailgun.addEventListener("input", function(ev) {
+		isTwoWayRailgun = inputTwoWayRailgun.checked;
+		updateCanvas();
+	});
+}
+
 function initializeButtonInput() {
 	const fillTopRowButton = document.getElementById("fill-top-row");
 	const fillBottomRowButton = document.getElementById("fill-bottom-row");
@@ -323,6 +350,7 @@ function initializeReflectorsDisplay() {
 
 function initializeInput() {
 	initializeRailgunCountInput();
+	initializeTwoWayRailgunInput();
 	initializeButtonInput();
 	initializeReflectorsInput();
 	initializeReflectorsDisplay();
